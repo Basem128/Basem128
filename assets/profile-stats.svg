@@ -5,15 +5,15 @@
   <line x1="337" y1="36" x2="337" y2="220" stroke="#aa55e7" opacity="0.65"/>
   <line x1="623" y1="36" x2="623" y2="220" stroke="#aa55e7" opacity="0.65"/>
   <g font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif" text-anchor="middle">
-    <text x="169" y="116" fill="#f6f0f9" font-size="44" font-weight="700">4</text>
+    <text x="169" y="116" fill="#f6f0f9" font-size="44" font-weight="700">563</text>
     <text x="169" y="154" fill="#f6f0f9" font-size="20" font-weight="600">Total Contributions</text>
     <text x="169" y="183" fill="#c0a9d0" font-size="16">Public + private · all time</text>
     <circle cx="480" cy="97" r="62" fill="none" stroke="#aa55e7" stroke-width="7"/>
     <path d="M480 28 L489 48 L471 48 Z" fill="#aa55e7"/>
-    <text x="480" y="111" fill="#f6f0f9" font-size="43" font-weight="700">1</text>
+    <text x="480" y="111" fill="#f6f0f9" font-size="43" font-weight="700">18</text>
     <text x="480" y="184" fill="#f6f0f9" font-size="20" font-weight="600">Repositories</text>
     <text x="480" y="212" fill="#c0a9d0" font-size="16">Public + private</text>
-    <text x="790" y="116" fill="#f6f0f9" font-size="44" font-weight="700">2</text>
+    <text x="790" y="116" fill="#f6f0f9" font-size="44" font-weight="700">129</text>
     <text x="790" y="154" fill="#f6f0f9" font-size="20" font-weight="600">Active Days</text>
     <text x="790" y="183" fill="#c0a9d0" font-size="16">Distinct days · all time</text>
   </g>
