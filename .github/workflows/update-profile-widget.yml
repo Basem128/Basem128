@@ -1,0 +1,33 @@
+name: Update profile stats widget
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 5 * * *'  # daily at 05:17 UTC
+
+permissions:
+  contents: write
+
+jobs:
+  build-widget:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout profile repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Generate SVG from live GitHub data
+        env:
+          PROFILE_STATS_TOKEN: ${{ secrets.PROFILE_STATS_TOKEN }}
+        run: python scripts/generate_widget.py
+      - name: Commit updated graphic if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/profile-stats.svg
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: refresh profile stats [skip ci]"
+            git push
+          fi
