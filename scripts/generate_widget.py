@@ -19,9 +19,35 @@ CONFIG_PATH = ROOT / "widget-style.json"
 OUTPUT_PATH = ROOT / "assets" / "profile-stats.svg"
 COLOR_RE = re.compile(r"^#[0-9a-fA-F]{6}$")
 DEFAULT_COLORS = {
-    "background": "#130a1e", "panel": "#241438", "accent": "#b27cf4",
-    "primaryText": "#f4f0f9", "secondaryText": "#bba9d0", "border": "#563d76"
+    "background": "#110817", "accent": "#aa55e7",
+    "primaryText": "#f6f0f9", "secondaryText": "#c0a9d0", "border": "#533668"
 }
+
+# Official GitHub Octicons repo-16; retain this notice in generated copies.
+OCTICONS_LICENSE = """MIT License
+Copyright (c) 2026 GitHub Inc.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE."""
+REPO_ICON_PATH = (
+    'M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0'
+    ' 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm'
+    '10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8ZM5 12.25a.25.25 0 0 1 .25-.25h3.5a'
+    '.25.25 0 0 1 .25.25v3.25a.25.25 0 0 1-.4.2l-1.45-1.087a.249.249 0 0 0-.3 0L5.4 15.7a.25.25'
+    ' 0 0 1-.4-.2Z'
+)
 
 
 def api(token: str, url: str, query: str | None = None) -> tuple:
@@ -96,8 +122,6 @@ def fetch_stats(token: str, expected_login: str | None = None, today: dt.date | 
     dates = set()
     for year in years:
         year_total = 0
-        if year > today.year:
-            continue
         for start, end in year_windows(year, today):
             query = f'''query {{
               viewer {{
@@ -149,24 +173,27 @@ def svg(stats: dict, style: dict) -> str:
     date = html.escape(str(stats["updated"]))
     return f'''<svg xmlns="http://www.w3.org/2000/svg" width="960" height="256" viewBox="0 0 960 256" role="img" aria-label="{title}">
   <title>{title}</title>
-  <rect width="960" height="256" rx="{s['cornerRadius']}" fill="{s['background']}" stroke="{s['border']}" stroke-width="2"/>
-  <rect x="337" y="14" width="286" height="228" rx="14" fill="{s['panel']}"/>
-  <line x1="337" y1="36" x2="337" y2="220" stroke="{s['accent']}" opacity="0.65"/>
-  <line x1="623" y1="36" x2="623" y2="220" stroke="{s['accent']}" opacity="0.65"/>
+  <!-- GitHub Octicons repo-16: https://github.com/primer/octicons
+{OCTICONS_LICENSE}
+  -->
+  <desc>All-time public and private GitHub activity: {vals[0]} contributions, {vals[1]} owned repositories, and {vals[2]} active days.</desc>
+  <rect x="1" y="1" width="958" height="254" rx="{s['cornerRadius']}" fill="{s['background']}" stroke="{s['border']}"/>
+  <line x1="320" y1="40" x2="320" y2="208" stroke="{s['accent']}" opacity="0.45"/>
+  <line x1="640" y1="40" x2="640" y2="208" stroke="{s['accent']}" opacity="0.45"/>
   <g font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif" text-anchor="middle">
-    <text x="169" y="116" fill="{s['primaryText']}" font-size="44" font-weight="700">{vals[0]}</text>
-    <text x="169" y="154" fill="{s['primaryText']}" font-size="20" font-weight="600">Total Contributions</text>
-    <text x="169" y="183" fill="{s['secondaryText']}" font-size="16">Public + private · all time</text>
-    <circle cx="480" cy="97" r="62" fill="none" stroke="{s['accent']}" stroke-width="7"/>
-    <path d="M480 28 L489 48 L471 48 Z" fill="{s['accent']}"/>
-    <text x="480" y="111" fill="{s['primaryText']}" font-size="43" font-weight="700">{vals[1]}</text>
-    <text x="480" y="184" fill="{s['primaryText']}" font-size="20" font-weight="600">Repositories</text>
-    <text x="480" y="212" fill="{s['secondaryText']}" font-size="16">Public + private</text>
-    <text x="790" y="116" fill="{s['primaryText']}" font-size="44" font-weight="700">{vals[2]}</text>
-    <text x="790" y="154" fill="{s['primaryText']}" font-size="20" font-weight="600">Active Days</text>
-    <text x="790" y="183" fill="{s['secondaryText']}" font-size="16">Distinct days · all time</text>
+    <text x="160" y="119" fill="{s['primaryText']}" font-size="44" font-weight="700">{vals[0]}</text>
+    <text x="160" y="182" fill="{s['primaryText']}" font-size="21" font-weight="600">Total Contributions</text>
+    <text x="160" y="210" fill="{s['secondaryText']}" font-size="16">Public + private</text>
+    <path d="M458.02 48.87 A52 52 0 1 0 501.98 48.87" fill="none" stroke="{s['accent']}" stroke-width="5" stroke-linecap="round"/>
+    <path d="{REPO_ICON_PATH}" transform="translate(464 34) scale(2)" fill="{s['accent']}"/>
+    <text x="480" y="111" fill="{s['primaryText']}" font-size="44" font-weight="700">{vals[1]}</text>
+    <text x="480" y="182" fill="{s['primaryText']}" font-size="21" font-weight="600">Owned Repositories</text>
+    <text x="480" y="210" fill="{s['secondaryText']}" font-size="16">Public + private</text>
+    <text x="800" y="119" fill="{s['primaryText']}" font-size="44" font-weight="700">{vals[2]}</text>
+    <text x="800" y="182" fill="{s['primaryText']}" font-size="21" font-weight="600">Active Days</text>
+    <text x="800" y="210" fill="{s['secondaryText']}" font-size="16">All time</text>
   </g>
-  <text x="946" y="245" fill="{s['secondaryText']}" opacity="0.8" font-size="11" font-family="Arial,sans-serif" text-anchor="end">Updated {date} UTC</text>
+  <text x="936" y="238" fill="{s['secondaryText']}" opacity="0.8" font-size="11" font-family="Arial,sans-serif" text-anchor="end">Updated {date} UTC</text>
 </svg>\n'''
 
 
