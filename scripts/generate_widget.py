@@ -24,23 +24,37 @@ DEFAULT_COLORS = {
 }
 
 
-def gql(token: str, query: str) -> dict:
-    body = json.dumps({"query": query}).encode("utf-8")
-    req = request.Request(
-        "https://api.github.com/graphql", data=body, method="POST",
-        headers={
-            "Authorization": f"Bearer {token}",
-            "Accept": "application/vnd.github+json",
-            "Content-Type": "application/json",
-            "User-Agent": "profile-stats-svg",
-        },
-    )
+def api(token: str, url: str, query: str | None = None) -> tuple:
+    body = json.dumps({"query": query}).encode("utf-8") if query else None
+    req = request.Request(url, data=body, headers={
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/vnd.github+json",
+        "Content-Type": "application/json",
+        "User-Agent": "profile-stats-svg",
+    })
     try:
         with request.urlopen(req, timeout=40) as response:
-            output = json.load(response)
+            return json.load(response), response.headers
     except error.HTTPError as ex:
-        detail = ex.read().decode("utf-8", errors="replace")[:600]
-        raise RuntimeError(f"GitHub API returned HTTP {ex.code}: {detail}") from ex
+        raise RuntimeError(f"GitHub API returned HTTP {ex.code}. Check PROFILE_STATS_TOKEN access.") from ex
+
+
+def fetch_account(token: str) -> dict:
+    account, headers = api(token, "https://api.github.com/user")
+    scopes = {scope.strip() for scope in headers.get("X-OAuth-Scopes", "").split(",")}
+    if not scopes.intersection({"read:user", "user"}):
+        raise RuntimeError(
+            "Private contribution access is not verified. Set PROFILE_STATS_TOKEN to a "
+            "classic personal access token with read:user scope. No output written."
+        )
+    for key in ("public_repos", "owned_private_repos"):
+        if type(account.get(key)) is not int or account[key] < 0:
+            raise RuntimeError(f"GitHub did not return a valid {key}; refusing incomplete totals.")
+    return account
+
+
+def gql(token: str, query: str) -> dict:
+    output, _ = api(token, "https://api.github.com/graphql", query)
     if output.get("errors"):
         raise RuntimeError(f"GitHub GraphQL errors: {output['errors']}")
     if not output.get("data"):
@@ -61,23 +75,27 @@ def year_windows(year: int, today: dt.date):
 
 def fetch_stats(token: str, expected_login: str | None = None, today: dt.date | None = None) -> dict:
     today = today or dt.datetime.now(dt.timezone.utc).date()
+    account = fetch_account(token)
     user = gql(token, """
     query {
       viewer {
         login
-        repositories(first: 1, ownerAffiliations: OWNER) { totalCount }
-        contributionsCollection { contributionYears }
+        createdAt
       }
     }
     """)["viewer"]
     login = user["login"]
+    if login.casefold() != account["login"].casefold():
+        raise RuntimeError("GitHub REST and GraphQL account identities differ. No output written.")
     if expected_login and login.casefold() != expected_login.casefold():
         raise RuntimeError(f"Token is for {login}, but expected {expected_login}. No output written.")
 
-    years = sorted(set(user["contributionsCollection"]["contributionYears"]))
+    # Scan every account year, including years omitted from a visibility-limited list.
+    years = range(dt.date.fromisoformat(user["createdAt"][:10]).year, today.year + 1)
     contributions = 0
     dates = set()
     for year in years:
+        year_total = 0
         if year > today.year:
             continue
         for start, end in year_windows(year, today):
@@ -93,15 +111,17 @@ def fetch_stats(token: str, expected_login: str | None = None, today: dt.date | 
             }}'''
             calendar = gql(token, query)["viewer"]["contributionsCollection"]["contributionCalendar"]
             contributions += calendar["totalContributions"]
+            year_total += calendar["totalContributions"]
             for week in calendar["weeks"]:
                 for day in week["contributionDays"]:
                     date = dt.date.fromisoformat(day["date"])
                     if start <= date <= end and day["contributionCount"] > 0:
                         dates.add(day["date"])
+        print(f"{year}: {year_total} contributions")
 
     return {
         "contributions": contributions,
-        "repositories": user["repositories"]["totalCount"],
+        "repositories": account["public_repos"] + account["owned_private_repos"],
         "active_days": len(dates),
         "updated": today.isoformat(),
     }
