@@ -18,13 +18,13 @@
 
 <h2><img src="assets/showcase.svg" alt="" width="26" height="26"> Project Showcase</h2>
 
-<table>
+<table width="100%">
   <tr>
-    <td width="50%"><img src="assets/projects/smart-road.gif" alt="Smart Road — traffic simulation" width="460"></td>
-    <td width="50%"><img src="assets/projects/social-network.gif" alt="Social Network — social media application" width="460"></td>
+    <td width="50%"><img src="assets/projects/smart-road.gif" alt="Smart Road — traffic simulation" width="100%"></td>
+    <td width="50%"><img src="assets/projects/social-network.gif" alt="Social Network — social media application" width="100%"></td>
   </tr>
   <tr>
-    <td width="50%"><img src="assets/projects/bomberman.gif" alt="Bomberman — multiplayer browser game" width="460"></td>
-    <td width="50%"><img src="assets/projects/mini-framework.png" alt="Mini Framework — custom JavaScript framework and TodoMVC demo" width="460"></td>
+    <td width="50%"><img src="assets/projects/bomberman.gif" alt="Bomberman — multiplayer browser game" width="100%"></td>
+    <td width="50%"><img src="assets/projects/mini-framework.png" alt="Mini Framework — custom JavaScript framework and TodoMVC demo" width="100%"></td>
   </tr>
 </table>
