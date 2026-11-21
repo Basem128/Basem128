@@ -28,3 +28,22 @@
     <td width="50%"><img src="assets/projects/mini-framework.png" alt="Mini Framework — custom JavaScript framework and TodoMVC demo" width="100%"></td>
   </tr>
 </table>
+
+---
+
+<h2><img src="assets/tech-stack.svg" alt="" width="26" height="26"> Tech Stack</h2>
+
+<h3 align="center">Languages</h3>
+<p align="center">
+  <img src="assets/tech-stack/languages.svg" alt="Go, Rust, HTML, CSS, JavaScript, Java" width="340">
+</p>
+
+<h3 align="center">Web Technologies</h3>
+<p align="center">
+  <img src="assets/tech-stack/web-technologies.svg" alt="React, Next.js, Node.js, Express" width="224">
+</p>
+
+<h3 align="center">Databases &amp; Tools</h3>
+<p align="center">
+  <img src="assets/tech-stack/databases-tools.svg" alt="SQLite, Docker, Git" width="166">
+</p>
